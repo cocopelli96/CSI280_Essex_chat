@@ -7,5 +7,8 @@
 
 int main(int argc, char* argv[])
 {
-  std::cout << construct_color(ConsoleColor::YELLOW, ConsoleColor::RED, true) << "Essex " << SERVER_VERSION << " is starting up...\x1b[0m" << std::endl;
+  std::string error = construct_color(ConsoleColor::RED, ConsoleColor::BLACK, true);
+  std::string info = construct_color(ConsoleColor::GREEN, ConsoleColor::BLACK, true);
+  std::string reset = reset_color();
+  std::cout << info << "Essex " << SERVER_VERSION << " is starting up..." << reset << std::endl;
 }

@@ -9,7 +9,7 @@ deps:
 ifeq ($(strip $(CMAKE)),)
 	($(error cmake must be installed in order to compile these dependencies))
 else
-	$(MKDIR) ./tacopie/build
+	$(MKDIR) -p ./tacopie/build
 	cd tacopie/build && \
 	$(CMAKE) .. && \
 	$(MAKE) && \
