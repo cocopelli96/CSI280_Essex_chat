@@ -12,6 +12,8 @@ else
 	$(MKDIR) ./tacopie/build
 	cd tacopie/build && \
 	$(CMAKE) .. && \
+	$(MAKE) && \
+	cd ../../colorizer/ && \
 	$(MAKE)
 endif
 
