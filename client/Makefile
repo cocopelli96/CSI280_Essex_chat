@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses++
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses
 
 OBJDIR=obj
 OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o)
@@ -25,7 +25,7 @@ directories:
 	$(MKDIR) $(OBJDIR) $(BINDIR)
 
 $(BINNAME): $(OBJFILES)
-	 $(LD) $(LDFLAGS) -o $(BINDIR)/$(BINNAME) $<
+	 $(LD) -o $(BINDIR)/$(BINNAME) $< $(LDFLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) -c $(CFLAGS) -o $@ $< $(INCDIR)
