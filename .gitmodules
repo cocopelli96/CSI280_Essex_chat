@@ -4,3 +4,6 @@
 [submodule "deps/colorizer"]
 	path = deps/colorizer
 	url = https://github.com/CalmBit/Colorizer.git
+[submodule "deps/ncurses"]
+	path = deps/ncurses
+	url = https://github.com/mirror/ncurses
