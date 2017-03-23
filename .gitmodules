@@ -1,0 +1,6 @@
+[submodule "deps/tacopie"]
+	path = deps/tacopie
+	url = https://github.com/Cylix/tacopie.git
+[submodule "deps/colorizer"]
+	path = deps/colorizer
+	url = https://github.com/CalmBit/Colorizer.git
