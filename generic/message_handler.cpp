@@ -24,7 +24,9 @@ void MessageHandler::accept(const Message* message) const {
 
 void MessageHandler::accept(uint16_t channel_id, uint16_t user_id, char const* text) const {
 	uint16_t trigger;
-	char* text2 = strdup(text);
+	size_t len = strlen(text) + 1;
+	char* text2 = new char[len];
+	memcpy(text2, text, len);
 	char* freeme = text2;
 	if(text2[0] == COMMAND_CHARACTER) {
 		char* command_name = (text2 + 1);
@@ -45,7 +47,7 @@ void MessageHandler::accept(uint16_t channel_id, uint16_t user_id, char const* t
 	}
 	Message m(trigger, channel_id, user_id, text2);
 	accept(&m);
-	free(freeme);
+	delete[] freeme;
 }
 
 void MessageHandler::registerCallback(MessageCallback callback, uint8_t trigger) {
