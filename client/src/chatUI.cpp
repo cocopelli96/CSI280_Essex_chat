@@ -1,5 +1,9 @@
-
 #include "chatUI.hpp"
+
+int main(int argc, char* argv[])
+{
+    startChat();
+}
 
 void resetInputWindow(WINDOW *inputWindow, const char *username) {
     //clear the current text of the input window
@@ -42,7 +46,7 @@ void scrollWindowDown(WINDOW *win, int &line, int maxLines) {
     }
 }
 
-void simChat(WINDOW *chatWindow, int &chatLine, int maxLines, char *text) {
+void simChat(WINDOW *chatWindow, int &chatLine, int maxLines, const char *text) {
     scrollWindowUp(chatWindow, chatLine, maxLines);
     
     wmove(chatWindow, chatLine, 0);
@@ -161,7 +165,7 @@ void startChat() {
             //this is a message for the chat
             
             //scroll chat if needed
-            scrollWindowUp(chatWindow, chatLine, chatMaxLines);
+	    scrollWindowUp(chatWindow, chatLine, chatMaxLines);
             
             //add new message to the chat
             wmove(chatWindow, chatLine, 0);
