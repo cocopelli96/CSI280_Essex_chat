@@ -1,5 +1,5 @@
-#ifndef _MESSAGE_HANDLER_H_
-#define _MESSAGE_HANDLER_H_
+#ifndef MESSAGE_HANDLER_H
+#define MESSAGE_HANDLER_H
 
 #include <stdint.h>
 #include <map>

@@ -1,5 +1,5 @@
-#ifndef _COMMAND_NAMES_H_
-#define _COMMAND_NAMES_H_
+#ifndef COMMAND_NAMES_H
+#define COMMAND_NAMES_H
 
 #include "message_handler.h"
 
