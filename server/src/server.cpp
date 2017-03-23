@@ -15,6 +15,17 @@ void messageReceived(const std::shared_ptr<tacopie::tcp_client>& client, const t
     std::cout << "Our client sent something!" << std::endl;
     client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
     // This is where all of the stuff for the parser should go?
+    
+    /*
+     * A quick note about read_result's structure:
+     * success - bool, denotes the read operation's success value (duh)
+     * buffer - std::vector<char>, the bytes from the read operation
+     */
+    
+    if(res.success)
+    {
+	
+    }
   }
 }
 
