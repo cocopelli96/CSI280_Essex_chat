@@ -4,7 +4,7 @@ CFLAGS=-Wall --std=c++11
 LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses
 
 OBJDIR=obj
-OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o)
+OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o chatNetcode.o)
 
 INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/ncurses/include)
 

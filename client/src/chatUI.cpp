@@ -1,8 +1,12 @@
 #include "chatUI.hpp"
+#include "chatNetcode.cpp"
+#include <exception>
+tacopie::tcp_client client;
 
 int main(int argc, char* argv[])
 {
     startChat();
+    return 0;
 }
 
 void resetInputWindow(WINDOW *inputWindow, const char *username) {
@@ -140,6 +144,19 @@ void startChat() {
     
     scrollok(chatWindow, TRUE);
     scrollok(inputWindow, TRUE);
+
+    try
+    {
+	initNetcode(client, "127.0.0.1");
+	// dirty hack to try to see if we can get early
+	// reporting working
+	simChat(chatWindow, chatLine, chatMaxLines, "We were successful in initting the TCP connection");
+	writeToServer(client, "Test Test 1 2 3");
+    }
+    catch(std::exception &err)
+    {
+	simChat(chatWindow, chatLine, chatMaxLines, err.what());
+    }
     
     //start chat loop, waiting for user responses
     while (!ending) {
