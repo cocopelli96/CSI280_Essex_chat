@@ -1,6 +1,6 @@
 #include "placeholder.h"
-#include "message.h"
-#include "message_handler.h"
+#include "../../generic/message.h"
+#include "../../generic/message_handler.h"
 
 #include "chatUI.hpp"
 #include "chatNetcode.cpp"
