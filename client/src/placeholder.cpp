@@ -7,11 +7,15 @@
 
 char* getUsername(const char* local_username, int user_id) {
 	static char buf[50];
+    char tmp;
+    
 	if(user_id) {
-		return snprintf(buf, 50, "User%d", user_id);
+		tmp = snprintf(buf, 50, "User%d", user_id);
 	} else {
-		return snprintf(buf, 50, local_username);
+		tmp = snprintf(buf, 50, local_username);
 	}
+    
+    return &tmp;
 }
 
 int getColorID(int user_id) {
