@@ -1,12 +1,12 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses -L ../generic/lib -lessexgeneric
 
 OBJDIR=obj
 OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o chatNetcode.o placeholder.o)
 
-INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/ncurses/include)
+INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/ncurses/include ../generic/include)
 
 BINDIR=bin
 BINNAME=chatter_client

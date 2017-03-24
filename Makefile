@@ -1,8 +1,9 @@
 CLIENTDIR=client
 SERVERDIR=server
 DEPSDIR=deps
+GENDIR=genric
 
-TARGETS =  $(DEPSDIR) $(CLIENTDIR) $(SERVERDIR)
+TARGETS =  $(DEPSDIR) $(GENDIR) $(CLIENTDIR) $(SERVERDIR)
 
 all: $(TARGETS)
 
@@ -12,16 +13,19 @@ $(TARGETS):
 
 .PHONY: deps
 deps:
+	$(MAKE) -C $(GENDIR)
 	$(MAKE) -C $(DEPSDIR)
 
 .PHONY: cleandeps
 cleandeps:
+	$(MAKE) -C $(GENDIR) clean
 	$(MAKE) -C $(DEPSDIR) clean
 
 .PHONY: clean
-clean: 
+clean:
 	$(MAKE) -C $(CLIENTDIR) clean
 	$(MAKE) -C $(SERVERDIR) clean
+	$(MAKE) -C $(GENDIR) clean
 	$(MAKE) -C $(DEPSDIR) clean
 
 .PHONY: install
