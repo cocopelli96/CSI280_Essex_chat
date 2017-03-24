@@ -225,7 +225,7 @@ void startChat() {
         if (compareArrays(input, exit, 255, 5)) {
             ending = true;
         } else {
-            outgoingHandler->accept(input);
+            outgoingHandler->accept(0, 0, input);
         }
         
         count++;
