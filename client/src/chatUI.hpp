@@ -12,11 +12,19 @@ void scrollWindowUp(WINDOW *win, int &line, int maxLines);
 
 void scrollWindowDown(WINDOW *win, int &line, int maxLines);
 
-void simChat(WINDOW *chatWindow, int &chatLine, int maxLines, const char *text);
+void addChatLine(const char* username, const char* message, int color);
+
+void simChat(const char *message);
 
 bool compareArrays(char *array1, const char *array2, int length1, int length2);
 
 void helpWindow(WINDOW *chatWindow, int columns, int lines);
+
+void sendNormalMessage(const Message* message);
+
+void helpMessage(const Message* message);
+
+void receiveNormalMessage(const Message* message);
 
 void startChat();
 

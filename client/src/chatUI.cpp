@@ -14,12 +14,12 @@ int chatLine, chatMaxLines;
 int lines, columns;
 
 MessageHandler* outgoingHandler;
-Messagehandler* incomingHandler;
+MessageHandler* incomingHandler;
 
 const char *username = "User3";
-const char *exit = "/exit";
-const char *help = "/help";
-const char *empty = "";
+const char *EXIT = "/exit";
+const char *HELP = "/help";
+const char *EMPTY = "";
 
 int main(int argc, char* argv[])
 {
@@ -69,7 +69,7 @@ void scrollWindowDown(WINDOW *win, int &line, int maxLines) {
 }
 
 void addChatLine(const char* username, const char* message, int color) {
-    scrollWindowUp(chatWindow, chatLine, maxLines);
+    scrollWindowUp(chatWindow, chatLine, chatMaxLines);
     
     wmove(chatWindow, chatLine, 0);
     wattron(chatWindow, COLOR_PAIR(color));
@@ -83,7 +83,7 @@ void addChatLine(const char* username, const char* message, int color) {
     chatLine++;
 }
 
-void simChat(message) {
+void simChat(const char *message) {
     addChatLine(NULL, message, 2);
 }
 
@@ -140,7 +140,7 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
 }
 
 void sendNormalMessage(const Message* message) {
-    fakeServer(message, incomingMessages);
+    fakeServer(message, incomingHandler);
 }
 
 void helpMessage(const Message* message) {
@@ -149,9 +149,9 @@ void helpMessage(const Message* message) {
 
 void receiveNormalMessage(const Message* message) {
     int userID = message->getUserID();
-    int color = getColor(userID);
+    int color = getColorID(userID);
     char* user = getUsername(username, userID);
-    char* text = message->getText();
+    const char* text = message->getText();
     addChatLine(user, text, color);
 }
 
@@ -222,7 +222,7 @@ void startChat() {
         //grab user input
         wgetstr(inputWindow, input);
         
-        if (compareArrays(input, exit, 255, 5)) {
+        if (compareArrays(input, EXIT, 255, 5)) {
             ending = true;
         } else {
             outgoingHandler->accept(0, 0, input);

@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-char* getUsername(char* local_username, int user_id) {
+char* getUsername(const char* local_username, int user_id) {
 	static char buf[50];
 	if(user_id) {
 		return snprintf(buf, 50, "User%d", user_id);
@@ -18,6 +18,6 @@ int getColorID(int user_id) {
 	return user_id ? 2 : 3;
 }
 
-void fakeServer(Message* message, MessageHandler* handler) {
+void fakeServer(const Message* message, MessageHandler* handler) {
 	handler->accept(message);
 }
