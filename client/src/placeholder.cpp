@@ -17,3 +17,7 @@ char* getUsername(char* local_username, int user_id) {
 int getColorID(int user_id) {
 	return user_id ? 2 : 3;
 }
+
+void fakeServer(Message* message, MessageHandler* handler) {
+	handler->accept(message);
+}

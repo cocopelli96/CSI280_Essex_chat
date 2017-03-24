@@ -13,6 +13,9 @@ WINDOW* chatWindow;
 int chatLine, chatMaxLines;
 int lines, columns;
 
+MessageHandler* outgoingHandler;
+Messagehandler* incomingHandler;
+
 const char *username = "User3";
 const char *exit = "/exit";
 const char *help = "/help";
@@ -136,16 +139,20 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     wrefresh(chatWindow);
 }
 
-void handleUserInput(char* input) {
-    if (!compareArrays(input, exit, 255, 5) and !compareArrays(input, help, 255, 5) and *input != *empty) {
-	addChatMessage(username, message, 3);
-    } else if (compareArrays(input, help, 255, 5)) {
-        //this is a request to use the help window
-        helpWindow(chatWindow, columns, lines, chatMaxLines);
-    } else if (compareArrays(input, exit, 255, 5)) {
-        //this is a request to exit the chat
-        ending = true;
-    }
+void sendNormalMessage(const Message* message) {
+    fakeServer(message, incomingMessages);
+}
+
+void helpMessage(const Message* message) {
+    helpWindow(chatWindow, columns, lines, chatMaxLines);
+}
+
+void receiveNormalMessage(const Message* message) {
+    int userID = message->getUserID();
+    int color = getColor(userID);
+    char* user = getUsername(username, userID);
+    char* text = message->getText();
+    addChatLine(user, text, color);
 }
 
 void startChat() {
@@ -174,17 +181,26 @@ void startChat() {
     scrollok(chatWindow, TRUE);
     scrollok(inputWindow, TRUE);
 
+    //setup message handlers
+    outgoingHandler = new MessageHandler();
+    outgoingHandler->nameTrigger("help", 'H');
+    outgoingHandler->registerCallback(helpMessage, 'H');
+    outgoingHandler->registerCallback(sendNormalMessage, DEFAULT_TRIGGER);
+
+    incomingHandler = new MessageHandler();
+    incomingHandler->registerCallback(receiveNormalMessage, DEFAULT_TRIGGER);
+
     try
     {
-	initNetcode(client, "127.0.0.1");
-	// dirty hack to try to see if we can get early
-	// reporting working
-	simChat("We were successful in initting the TCP connection");
-	writeToServer(client, "Test Test 1 2 3");
+        initNetcode(client, "127.0.0.1");
+        // dirty hack to try to see if we can get early
+        // reporting working
+        simChat("We were successful in initting the TCP connection");
+        writeToServer(client, "Test Test 1 2 3");
     }
     catch(std::exception &err)
     {
-	simChat(err.what());
+        simChat(err.what());
     }
     
     //start chat loop, waiting for user responses
@@ -206,7 +222,11 @@ void startChat() {
         //grab user input
         wgetstr(inputWindow, input);
         
-	handleUserInput(input);
+        if (compareArrays(input, exit, 255, 5)) {
+            ending = true;
+        } else {
+            outgoingHandler->accept(input);
+        }
         
         count++;
     }
@@ -215,4 +235,6 @@ void startChat() {
     delwin(chatWindow);
     delwin(inputWindow);
     endwin();
+    delete outgoingHandler;
+    delete incomingHandler;
 }
