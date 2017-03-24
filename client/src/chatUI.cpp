@@ -1,7 +1,17 @@
 #include "chatUI.hpp"
 #include "chatNetcode.cpp"
 #include <exception>
+
 tacopie::tcp_client client;
+
+WINDOW* chatWindow;
+int chatLine, chatMaxLines;
+int lines, columns;
+
+const char *username = "User3";
+const char *exit = "/exit";
+const char *help = "/help";
+const char *empty = "";
 
 int main(int argc, char* argv[])
 {
@@ -50,15 +60,23 @@ void scrollWindowDown(WINDOW *win, int &line, int maxLines) {
     }
 }
 
-void simChat(WINDOW *chatWindow, int &chatLine, int maxLines, const char *text) {
+void addChatLine(const char* username, const char* message, int color) {
     scrollWindowUp(chatWindow, chatLine, maxLines);
     
     wmove(chatWindow, chatLine, 0);
-    wattron(chatWindow, COLOR_PAIR(2));
-    waddstr(chatWindow, text);
+    wattron(chatWindow, COLOR_PAIR(color));
+    if(username) {
+        waddstr(chatWindow, username);
+        waddstr(chatWindow, ": ");
+    }
+    waddstr(chatWindow, message);
     wrefresh(chatWindow);
     
     chatLine++;
+}
+
+void simChat(message) {
+    addChatLine(NULL, message, 2);
 }
 
 bool compareArrays(char *array1, const char *array2, int length1, int length2) {
@@ -97,9 +115,9 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     wmove(helpWindow, 3, 1);
     waddstr(helpWindow, "Command   |   Effect");
     wmove(helpWindow, 4, 1);
-    waddstr(helpWindow, "\\help     |   presents the help window");
+    waddstr(helpWindow, "/help     |   presents the help window");
     wmove(helpWindow, 5, 1);
-    waddstr(helpWindow, "\\exit     |   exit the chat");
+    waddstr(helpWindow, "/exit     |   exit the chat");
     wmove(helpWindow, chatMaxLines - 2, 1);
     waddstr(helpWindow, "Press any key to close this window...");
     wrefresh(helpWindow);
@@ -113,17 +131,23 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     wrefresh(chatWindow);
 }
 
+void handleUserInput(char* input) {
+    if (!compareArrays(input, exit, 255, 5) and !compareArrays(input, help, 255, 5) and *input != *empty) {
+	addChatMessage(username, message, 3);
+    } else if (compareArrays(input, help, 255, 5)) {
+        //this is a request to use the help window
+        helpWindow(chatWindow, columns, lines, chatMaxLines);
+    } else if (compareArrays(input, exit, 255, 5)) {
+        //this is a request to exit the chat
+        ending = true;
+    }
+}
+
 void startChat() {
     //initialize variables
-    int chatLine = 0;
     int count = 0;
-    int lines, columns;
-    int chatMaxLines, inputMaxLines;
+    int inputMaxLines;
     char input[255];
-    const char *username = "User3";
-    const char *exit = "\\exit";
-    const char *help = "\\help";
-    const char *empty = "";
     bool ending = false;
     
     //start using ncurses windows
@@ -131,7 +155,7 @@ void startChat() {
     setupWindow(lines, columns);
     
     //create chat window
-    WINDOW *chatWindow = newwin(lines - 2, columns, 0, 0);
+    chatWindow = newwin(lines - 2, columns, 0, 0);
     chatMaxLines = lines - 2;
     
     //create input window
@@ -150,25 +174,25 @@ void startChat() {
 	initNetcode(client, "127.0.0.1");
 	// dirty hack to try to see if we can get early
 	// reporting working
-	simChat(chatWindow, chatLine, chatMaxLines, "We were successful in initting the TCP connection");
+	simChat("We were successful in initting the TCP connection");
 	writeToServer(client, "Test Test 1 2 3");
     }
     catch(std::exception &err)
     {
-	simChat(chatWindow, chatLine, chatMaxLines, err.what());
+	simChat(err.what());
     }
     
     //start chat loop, waiting for user responses
     while (!ending) {
         //simulated other user chats
         if (count == 2) {
-            simChat(chatWindow, chatLine, chatMaxLines, "User1: hey Paul");
+            simChat("User1: hey Paul");
         } else if (count == 3) {
-            simChat(chatWindow, chatLine, chatMaxLines, "User2: whats up mike");
+            simChat("User2: whats up mike");
         } else if (count == 5) {
-            simChat(chatWindow, chatLine, chatMaxLines, "User1: where r u today");
+            simChat("User1: where r u today");
         } else if (count == 6) {
-            simChat(chatWindow, chatLine, chatMaxLines, "User2: at the park");
+            simChat("User2: at the park");
         }
         
         //reset the input window
@@ -177,29 +201,7 @@ void startChat() {
         //grab user input
         wgetstr(inputWindow, input);
         
-        //determine what to do with user input
-        if (!compareArrays(input, exit, 255, 5) and !compareArrays(input, help, 255, 5) and *input != *empty) {
-            //this is a message for the chat
-            
-            //scroll chat if needed
-	    scrollWindowUp(chatWindow, chatLine, chatMaxLines);
-            
-            //add new message to the chat
-            wmove(chatWindow, chatLine, 0);
-            wattron(chatWindow, COLOR_PAIR(3));
-            waddstr(chatWindow, username);
-            waddstr(chatWindow, ": ");
-            waddstr(chatWindow, input);
-            wrefresh(chatWindow);
-            
-            chatLine++;
-        } else if (compareArrays(input, help, 255, 5)) {
-            //this is a request to use the help window
-            helpWindow(chatWindow, columns, lines, chatMaxLines);
-        } else if (compareArrays(input, exit, 255, 5)) {
-            //this is a request to exit the chat
-            ending = true;
-        }
+	handleUserInput(input);
         
         count++;
     }
