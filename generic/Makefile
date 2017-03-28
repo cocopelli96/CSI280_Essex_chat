@@ -25,7 +25,7 @@ directories:
 	$(MKDIR) $(OBJDIR) $(BINDIR)
 
 $(BINNAME): $(OBJFILES)
-	 $(LD) $(LDFLAGS) $(BINDIR)/$(BINNAME) $<
+	 $(LD) $(LDFLAGS) $(BINDIR)/$(BINNAME) $^
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) -c $(CFLAGS) -o $@ $< $(INCDIR)

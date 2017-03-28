@@ -5,7 +5,7 @@
 #include "message_handler.h"
 
 #include "chatUI.hpp"
-#include "chatNetcode.cpp"
+#include "chatNetcode.hpp"
 
 #include <exception>
 

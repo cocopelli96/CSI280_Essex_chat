@@ -14,7 +14,7 @@ char* getUsername(const char* local_username, int user_id) {
 	if(user_id) {
 		tmp = snprintf(buf, 50, "User%d", user_id);
 	} else {
-		tmp = snprintf(buf, 50, local_username);
+		tmp = snprintf(buf, 50, "%s", local_username);
 	}
     
     return &tmp;
