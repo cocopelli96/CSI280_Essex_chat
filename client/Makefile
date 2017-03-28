@@ -1,10 +1,10 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses -L ../generic/lib -lessexgeneric
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses -L../generic/lib -lessexgeneric
 
 OBJDIR=obj
-OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o chatNetcode.o)
+OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o chatNetcode.o placeholder.o)
 
 INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/ncurses/include ../generic/include)
 
@@ -25,7 +25,7 @@ directories:
 	$(MKDIR) $(OBJDIR) $(BINDIR)
 
 $(BINNAME): $(OBJFILES)
-	 $(LD) -o $(BINDIR)/$(BINNAME) $< $(LDFLAGS)
+	 $(LD) -o $(BINDIR)/$(BINNAME) $^ $(LDFLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) -c $(CFLAGS) -o $@ $< $(INCDIR)

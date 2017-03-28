@@ -4,7 +4,9 @@
 
 #define ESSEX_PORT 7331
 
-tacopie::tcp_client initNetcode(const std::string &addr);
+void initNetcode(tacopie::tcp_client &client, const std::string &addr);
+
+void writeToServer(tacopie::tcp_client &client, const std::string &message);
 
 void cleanupNetcode(tacopie::tcp_client &client);
 

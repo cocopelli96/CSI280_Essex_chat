@@ -1,7 +1,7 @@
 CLIENTDIR=client
 SERVERDIR=server
 DEPSDIR=deps
-GENDIR=genric
+GENDIR=generic
 
 TARGETS =  $(DEPSDIR) $(GENDIR) $(CLIENTDIR) $(SERVERDIR)
 
