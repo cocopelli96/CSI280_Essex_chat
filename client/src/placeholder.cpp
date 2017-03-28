@@ -9,9 +9,9 @@ char* getUsername(const char* local_username, int user_id) {
 	static char buf[50];
     
 	if(user_id) {
-		tmp = snprintf(buf, 50, "User%d", user_id);
+		snprintf(buf, 50, "User%d", user_id);
 	} else {
-		tmp = snprintf(buf, 50, "%s", local_username);
+		snprintf(buf, 50, "%s", local_username);
 	}
     
     return buf;
