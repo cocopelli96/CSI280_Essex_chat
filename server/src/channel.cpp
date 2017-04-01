@@ -13,7 +13,7 @@ void Channel::addUser(uint16_t user_id) {
 	this->_users.insert(user_id);
 }
 
-Channel* getChannel(uint16_t channel_id) {
+Channel* Channel::getChannel(uint16_t channel_id) {
 	Channel* channel = _channels[channel_id];
 	if(channel == NULL) {
 		channel = new Channel();
@@ -22,6 +22,6 @@ Channel* getChannel(uint16_t channel_id) {
 	return channel;
 }
 
-Channel* getChannelIfExists(uint16_t channel_id) {
+Channel* Channel::getChannelIfExists(uint16_t channel_id) {
 	return _channels[channel_id];
 }
