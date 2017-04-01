@@ -6,16 +6,6 @@
 
 Environment* Environment::environment = NULL;
 
-Environment::Environment() {
-	this->_outgoing = new MessageHandler();
-	this->_incoming = new MessageHandler();
-}
-
-Environment::~Environment() {
-	delete this->_outgoing;
-	delete this->_incoming;
-}
-
 void Environment::createEnvironment
 
 Environment* Environment::getEnvironment() {

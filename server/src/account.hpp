@@ -11,8 +11,21 @@ private:
 	~Account();
 public:
 	const char* getUsername();
+
+	/**
+	 * Returns the account with some username, or null if it doesn't exist.
+	 */
 	static Account* getAccountIfExists(char* username);
+
+	/**
+	 * Returns the account with some user ID, or null if it doesn't exist.
+	 */
 	static Account* getAccountIfExists(uint16_t user_id);
+
+	/**
+	 * Creates an account with a given username, or null if the account
+	 * can't be created (eg. if an account with that name already exists).
+	 */
 	static Account* createAccount(char* username);
 };
 

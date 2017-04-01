@@ -39,9 +39,7 @@ Account* Account::getAccountIfExists(uint16_t user_id) {
 }
 
 Account* Account::createAccount(char* username) {
-	if(_accounts[username]) {
-		throw new std::invalid_argument("duplicate username...");
-	}
+	if(_accounts[username]) return null;
 	uint16_t user_id = (uint16_t)_accounts_by_id.size();
 	Account* account = new Account(user_id, username);
 	_accounts_by_id[user_id] = account;

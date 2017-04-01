@@ -10,10 +10,10 @@ private:
 	static Environment* environment;
 protected:
 	Environment();
-	MessageHandler* outgoing;
-	MessageHandler* incoming;
-	static void createEnvironment(Environment* environment);
 	~Environment();
+	MessageHandler outgoing;
+	MessageHandler incoming;
+	static void createEnvironment(Environment* environment);
 public:
 	static Environment* getEnvironment();
 	void sendMessage(Message* message);
