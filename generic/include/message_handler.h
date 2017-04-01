@@ -6,18 +6,13 @@
 #include <cstring>
 
 #include "message.h"
+#include "cmpcharp.h"
 
 #define DEFAULT_TRIGGER 0	//the trigger to use if none match
 #define STANDARD_TRIGGER 'm'	//the trigger to use for a normal message (ie. no initial / )
 #define COMMAND_CHARACTER '/'
 
 typedef void(*MessageCallback)(const Message* message);
-
-struct cmpcharp {
-	bool operator()(char const* a, char const* b) const {
-		return std::strcmp(a, b) < 0;
-	}
-};
 
 class MessageHandler {
 private:
