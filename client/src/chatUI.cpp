@@ -1,6 +1,5 @@
 #include "placeholder.h"
-//#include "../../generic/message.h"
-//#include "../../generic/message_handler.h"
+
 #include "message.h"
 #include "message_handler.h"
 
@@ -8,12 +7,16 @@
 #include "chatNetcode.hpp"
 
 #include <exception>
+#include <panel.h>
 
 tacopie::tcp_client client;
 
 WINDOW* chatWindow;
+WINDOW *inputWindow;
+
 int chatLine, chatMaxLines;
 int lines, columns;
+const int inputMaxLines = 2;
 
 MessageHandler* outgoingHandler;
 MessageHandler* incomingHandler;
@@ -110,14 +113,17 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     int windowColumns = columns / 2;
     
     //shrink the chat window so the help window can be displayed
-    wresize(chatWindow, chatMaxLines, windowColumns);
-    wrefresh(chatWindow);
+    //wresize(chatWindow, chatMaxLines, windowColumns);
+    //wrefresh(chatWindow);
     
     //create the help window
-    WINDOW *helpWindow = newwin(chatMaxLines, windowColumns, 0, windowColumns);
+    WINDOW *helpWindow = newwin(chatMaxLines, windowColumns, 0, windowColumns / 2);
     wbkgd(helpWindow, COLOR_PAIR(4));
     wborder(helpWindow, 0, 0, 0, 0, 0, 0, 0, 0);
     wattron(helpWindow, A_BOLD);
+    
+    //create panel for the window
+    PANEL *helpPanel = new_panel(helpWindow);
     
     //provide text for the help window
     wmove(helpWindow, 1, 1);
@@ -132,13 +138,20 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     waddstr(helpWindow, "Press any key to close this window...");
     wrefresh(helpWindow);
     
+    update_panels();
+    doupdate();
+    
     //delete the help window the next time the user presses a button
     wgetch(helpWindow);
+    del_panel(helpPanel);
     delwin(helpWindow);
     
+    update_panels();
+    doupdate();
+    
     //enlarge the chat window to fill the screen again
-    wresize(chatWindow, chatMaxLines, columns);
-    wrefresh(chatWindow);
+    //wresize(chatWindow, chatMaxLines, columns);
+    //wrefresh(chatWindow);
 }
 
 void sendNormalMessage(const Message* message) {
@@ -160,7 +173,6 @@ void receiveNormalMessage(const Message* message) {
 void startChat() {
     //initialize variables
     int count = 0;
-    int inputMaxLines;
     char input[255];
     bool ending = false;
     
@@ -169,12 +181,13 @@ void startChat() {
     setupWindow(lines, columns);
     
     //create chat window
-    chatWindow = newwin(lines - 2, columns, 0, 0);
-    chatMaxLines = lines - 2;
+    chatMaxLines = lines - inputMaxLines;
+    chatWindow = newwin(chatMaxLines, columns, 0, 0);
+    
+    PANEL *chatPanel = new_panel(chatWindow);
     
     //create input window
-    WINDOW *inputWindow = newwin(2, columns, lines - 2, 0);
-    inputMaxLines = 2;
+    inputWindow = newwin(inputMaxLines, columns, chatMaxLines, 0);
     
     //apply settings to windows
     wbkgd(chatWindow, COLOR_PAIR(1));
@@ -234,6 +247,7 @@ void startChat() {
     }
     
     //delete windows and stop using ncurses
+    del_panel(chatPanel);
     delwin(chatWindow);
     delwin(inputWindow);
     endwin();
