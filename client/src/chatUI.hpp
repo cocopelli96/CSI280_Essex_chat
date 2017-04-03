@@ -30,6 +30,10 @@ void chatLog(char *text);
 
 void chatLog(const char *text);
 
+void createMenu();
+
+void deleteMenu();
+
 void startChat();
 
 #endif

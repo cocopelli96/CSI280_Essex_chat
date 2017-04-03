@@ -9,14 +9,20 @@
 
 #include <exception>
 #include <panel.h>
+#include <menu.h>
 
 tacopie::tcp_client client;
 
 WINDOW* chatWindow;
 WINDOW *inputWindow;
+WINDOW *menuWindow;
+
+ITEM *menuItems[10];
+
+MENU *chatMenu;
 
 int chatLine, chatMaxLines;
-int lines, columns;
+int lines, columns, menuColumns;
 int logLines = 0;
 const int inputMaxLines = 2;
 
@@ -50,6 +56,7 @@ void resetInputWindow(WINDOW *inputWindow, const char *username) {
 void setupWindow(int &lines, int &columns) {
     //the dimensions of the terminal
     getmaxyx(stdscr, lines, columns);
+    menuColumns = columns / 5;
     scrollok(stdscr, true);
     
     //start using ncurses colors and set color pairs.
@@ -187,6 +194,31 @@ void chatLog(const char *text) {
     logLines++;
 }
 
+void createMenu() {
+    menuItems[0] = new_item("Lobby", "");
+    //menuItems[1] = new_item("chat 2", "");
+    chatMenu = new_menu(menuItems);
+    
+    menuWindow = menu_win(chatMenu);
+    wresize(menuWindow, lines, menuColumns);
+    box(menuWindow, 0, 0);
+    wbkgd(menuWindow, COLOR_PAIR(1));
+    set_menu_sub(chatMenu, derwin(menuWindow, lines - 2, menuColumns - 2, 1, 1));
+    set_menu_mark(chatMenu, "");
+    
+    post_menu(chatMenu);
+    refresh();
+}
+
+void deleteMenu() {
+    unpost_menu(chatMenu);
+    free_menu(chatMenu);
+    
+    for (int i = 0; i < 10; i++) {
+        free_item(menuItems[i]);
+    }
+}
+
 void startChat() {
     //initialize variables
     int count = 0;
@@ -199,12 +231,12 @@ void startChat() {
     
     //create chat window
     chatMaxLines = lines - inputMaxLines;
-    chatWindow = newwin(chatMaxLines, columns, 0, 0);
+    chatWindow = newwin(chatMaxLines, menuColumns * 4, 0, menuColumns);
     
     PANEL *chatPanel = new_panel(chatWindow);
     
     //create input window
-    inputWindow = newwin(inputMaxLines, columns, chatMaxLines, 0);
+    inputWindow = newwin(inputMaxLines, menuColumns * 4, chatMaxLines, menuColumns);
     
     //apply settings to windows
     wbkgd(chatWindow, COLOR_PAIR(1));
@@ -212,6 +244,8 @@ void startChat() {
     
     scrollok(chatWindow, TRUE);
     scrollok(inputWindow, TRUE);
+    
+    createMenu();
 
     //setup message handlers
     outgoingHandler = new MessageHandler();
@@ -265,6 +299,8 @@ void startChat() {
     
     //delete chat log file
     deleteChatLog(fileName);
+    
+    deleteMenu();
     
     //delete windows and stop using ncurses
     del_panel(chatPanel);
