@@ -13,6 +13,10 @@ Read [INSTALL](INSTALL.md) for more information on how to contribute to this pro
 
 Making and Running the project
 -------------
+Install the following dependencies before working with the this project:
+```
+cmake
+```
 To make the project you must run the following commands:
 ```
 git submodule update --init –-recursive
