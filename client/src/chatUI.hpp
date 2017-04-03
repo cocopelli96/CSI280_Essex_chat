@@ -26,6 +26,10 @@ void helpMessage(const Message* message);
 
 void receiveNormalMessage(const Message* message);
 
+void chatLog(char *text);
+
+void chatLog(const char *text);
+
 void startChat();
 
 #endif

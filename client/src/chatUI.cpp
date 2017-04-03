@@ -5,6 +5,7 @@
 
 #include "chatUI.hpp"
 #include "chatNetcode.hpp"
+#include "chatLog.hpp"
 
 #include <exception>
 #include <panel.h>
@@ -16,6 +17,7 @@ WINDOW *inputWindow;
 
 int chatLine, chatMaxLines;
 int lines, columns;
+int logLines = 0;
 const int inputMaxLines = 2;
 
 MessageHandler* outgoingHandler;
@@ -25,6 +27,7 @@ const char *username = "User3";
 const char *EXIT = "/exit";
 const char *HELP = "/help";
 const char *EMPTY = "";
+const char *fileName = "chatLog.txt";
 
 int main(int argc, char* argv[])
 {
@@ -74,15 +77,25 @@ void scrollWindowDown(WINDOW *win, int &line, int maxLines) {
 }
 
 void addChatLine(const char* username, const char* message, int color) {
+    char text[255];
     scrollWindowUp(chatWindow, chatLine, chatMaxLines);
     
     wmove(chatWindow, chatLine, 0);
     wattron(chatWindow, COLOR_PAIR(color));
     if(username) {
-        waddstr(chatWindow, username);
-        waddstr(chatWindow, ": ");
+        //waddstr(chatWindow, username);
+        //waddstr(chatWindow, ": ");
+        
+        chatLog(username);
+        chatLog(": ");
     }
-    waddstr(chatWindow, message);
+    //waddstr(chatWindow, message);
+    
+    chatLog(message);
+    chatLog("\n");
+    
+    getChatLine(fileName, logLines - 1, text);
+    waddstr(chatWindow, text);
     wrefresh(chatWindow);
     
     chatLine++;
@@ -112,10 +125,6 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     //initialize variables
     int windowColumns = columns / 2;
     
-    //shrink the chat window so the help window can be displayed
-    //wresize(chatWindow, chatMaxLines, windowColumns);
-    //wrefresh(chatWindow);
-    
     //create the help window
     WINDOW *helpWindow = newwin(chatMaxLines, windowColumns, 0, windowColumns / 2);
     wbkgd(helpWindow, COLOR_PAIR(4));
@@ -138,6 +147,7 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     waddstr(helpWindow, "Press any key to close this window...");
     wrefresh(helpWindow);
     
+    //update panels
     update_panels();
     doupdate();
     
@@ -146,12 +156,9 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     del_panel(helpPanel);
     delwin(helpWindow);
     
+    //update panels
     update_panels();
     doupdate();
-    
-    //enlarge the chat window to fill the screen again
-    //wresize(chatWindow, chatMaxLines, columns);
-    //wrefresh(chatWindow);
 }
 
 void sendNormalMessage(const Message* message) {
@@ -168,6 +175,16 @@ void receiveNormalMessage(const Message* message) {
     char* user = getUsername(username, userID);
     const char* text = message->getText();
     addChatLine(user, text, color);
+}
+
+void chatLog(char *text) {
+    logChatLine(text, fileName);
+    logLines++;
+}
+
+void chatLog(const char *text) {
+    logChatLine(text, fileName);
+    logLines++;
 }
 
 void startChat() {
@@ -245,6 +262,9 @@ void startChat() {
         
         count++;
     }
+    
+    //delete chat log file
+    deleteChatLog(fileName);
     
     //delete windows and stop using ncurses
     del_panel(chatPanel);
