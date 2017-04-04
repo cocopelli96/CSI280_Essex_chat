@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lncurses -lmenu -lpanel -L../generic/lib -lessexgeneric
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lmenu -lpanel -lncurses -L../generic/lib -lessexgeneric -pthread
 
 OBJDIR=obj
 OBJFILES = $(addprefix $(OBJDIR)/, chatUI.o chatNetcode.o placeholder.o chatLog.o)
