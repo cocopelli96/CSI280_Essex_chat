@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/colorizer/lib -lcolorizer
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/colorizer/lib -lcolorizer -pthread
 
 OBJDIR=obj
 OBJFILES = $(addprefix $(OBJDIR)/, server.o)
