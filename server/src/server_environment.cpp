@@ -24,6 +24,14 @@ static void joinChannel(const Message* message) {
 	Channel.getChannel(channel_id)->addUser(user_id);
 }
 
+static void userLogin(const Message* message) {
+
+}
+
+static void userRegister(const Message* message) {
+	
+}
+
 ServerEnvironment::ServerEnvironment() : Environment() {
 	//you'll need to implement the following handlers for issue 23:
 
@@ -38,11 +46,17 @@ ServerEnvironment::ServerEnvironment() : Environment() {
 	//outgoing handlers:
 	//	none, I've done this as an example
 	
-	this->incoming.registerHandler(loopback, STANDARD_TRIGGER);
-	this->outgoing.registerHandler(relayMessage, DEFAULT_TRIGGER);
+	this->incoming.registerCallback(loopback, STANDARD_TRIGGER);
+	this->outgoing.registerCallback(relayMessage, DEFAULT_TRIGGER);
 
-	this->incoming.registerHandler(joinChannel, 'j');
-	this->incoming.nameTrigger("join", 'j');
+	this->incoming.registerCallback(joinChannel, 'j');
+	this->incoming.registerCallback("join", 'j');
+
+	this->incoming.registerCallback(userLogin, 'L');
+	this->incoming.nameTrigger("login", 'L');
+
+	this->incoming.registerCallback(userRegister, 'R');
+	this->incoming.nameTrigger("register", 'R');
 }
 
 ServerEnvironment::~ServerEnvironment() {
@@ -72,7 +86,7 @@ void ServerEnvironment::sendToUser(uint16_t user_id, Message* message) {
  * If no matching connection is found, returns a nullptr, otherwise returns a shared_ptr
  * to the client object.
  */
-std::shared_ptr<tacopie::tcp_client> getUser(uint16_t user_id)
+std::shared_ptr<tacopie::tcp_client> ServerEnvironment::getUser(uint16_t user_id)
 {
 	try
 	{
@@ -92,7 +106,7 @@ std::shared_ptr<tacopie::tcp_client> getUser(uint16_t user_id)
  * Throws an std::invalid_argument exception if the user_id is already registered,
  * otherwise adds the user_id to the client_list map.
  */ 
-void addUser(uint16_t user_id, std::shared_ptr<tacopie::tcp_client> connection)
+void ServerEnvironment::addUser(uint16_t user_id, std::shared_ptr<tacopie::tcp_client> connection)
 {
 	// Do we have a connection by this user_id already? Throw it away,
 	// throw an exception.
@@ -112,7 +126,7 @@ void addUser(uint16_t user_id, std::shared_ptr<tacopie::tcp_client> connection)
  * If the user specified doesn't exist, throws an std::invalid_argument exception,
  * otherwise completely erases the entry from the map.
  */ 
-void removeUser(uint16_t user_id)
+void ServerEnvironment::removeUser(uint16_t user_id)
 {
 	// If we can't find a matching connection, we should throw an exception -
 	// otherwise, we'd get undefined behaviour.
@@ -134,4 +148,20 @@ void ServerEnvironment::sendToChannel(Message* message) {
 	for(auto user_id : channel->getUserIDs()) {
 		this->sendToUser(user_id, message);
 	}
+}
+
+
+void ServerEnvironment::recieveFromClient(const std::shared_ptr<tacopie::tcp_client>& client, const tacopie::tcp_client::read_result& res)
+{
+  if(res.success)
+  {
+    std::cout << "Our client sent something!" << std::endl;
+    client->async_read({1024, std::bind(&recieveFromClient, client, std::placeholders::_1)});
+    /*
+     * A quick note about read_result's structure:
+     * success - bool, denotes the read operation's success value (duh)
+     * buffer - std::vector<char>, the bytes from the read operation
+     */
+
+  }
 }
