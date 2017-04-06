@@ -5,13 +5,13 @@
 
 class Account {
 private:
-	const char* _username;
-	const uint16_t _user_id;
-	Account(char* username);
+	char* _username;
+	uint16_t _user_id;
+	Account(uint16_t user_id, const char* username);
 	~Account();
 public:
 	const char* getUsername();
-
+	uint16_t getUserID();
 	/**
 	 * Returns the account with some username, or null if it doesn't exist.
 	 */

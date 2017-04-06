@@ -1,12 +1,12 @@
 CC=g++
 LD=g++
 CFLAGS=-Wall --std=c++11
-LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/colorizer/lib -lcolorizer
+LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/colorizer/lib -lcolorizer -L ../generic/lib -lessexgeneric
 
 OBJDIR=obj
-OBJFILES = $(addprefix $(OBJDIR)/, server.o)
+OBJFILES = $(addprefix $(OBJDIR)/, server.o account.o channel.o server_environment.o)
 
-INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/colorizer/include)
+INCDIR=$(addprefix -I, ../deps/tacopie/includes ../deps/colorizer/include ../generic/include)
 
 BINDIR=bin
 BINNAME=chatter_server
@@ -25,7 +25,7 @@ directories:
 	$(MKDIR) $(OBJDIR) $(BINDIR)
 
 $(BINNAME): $(OBJFILES)
-	 $(LD) -o $(BINDIR)/$(BINNAME) $< $(LDFLAGS)
+	 $(LD) -o $(BINDIR)/$(BINNAME) $^ $(LDFLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) -c $(CFLAGS) -o $@ $< $(INCDIR)

@@ -6,16 +6,30 @@
 
 Environment* Environment::environment = NULL;
 
-void Environment::createEnvironment
+/* 
+ * The following need implementation, @PatrickDCoffman...
+ */
+Environment::Environment()
+{
+
+}
+Environment::~Environment()
+{
+
+}
+
+void Environment::createEnvironment(Environment* environment) {
+
+}
 
 Environment* Environment::getEnvironment() {
 	return environment;
 }
 
-void Environment::sendMessage(Message* message) {
-	this->_outgoing->accept(message);
+void Environment::sendMessage(const Message* message) {
+	this->outgoing.accept(message);
 }
 
 void Environment::sendMessage(uint16_t channel_id, uint16_t user_id, char* text) {
-	this->_outgoing->accept(channel_id, user_id, text);
+	this->outgoing.accept(channel_id, user_id, text);
 }

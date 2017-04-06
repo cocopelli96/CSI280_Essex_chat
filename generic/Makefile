@@ -4,7 +4,7 @@ CFLAGS=-Wall --std=gnu++11
 LDFLAGS=rcs
 
 OBJDIR=obj
-OBJFILES = $(addprefix $(OBJDIR)/, command_names.o message.o message_handler.o)
+OBJFILES = $(addprefix $(OBJDIR)/, command_names.o message.o message_handler.o environment.o)
 
 INCDIR=$(addprefix -I, ./include)
 

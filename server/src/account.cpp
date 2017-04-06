@@ -39,9 +39,12 @@ Account* Account::getAccountIfExists(uint16_t user_id) {
 }
 
 Account* Account::createAccount(char* username) {
-	if(_accounts[username]) return null;
+	if(_accounts[username]) return nullptr;
 	uint16_t user_id = (uint16_t)_accounts_by_id.size();
 	Account* account = new Account(user_id, username);
 	_accounts_by_id[user_id] = account;
 	_accounts[username] = account;
+	// If this isn't supposed to return a value, this should be a void. Otherwise, quashing
+	// the warning.
+	return account;
 }

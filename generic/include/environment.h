@@ -16,7 +16,7 @@ protected:
 	static void createEnvironment(Environment* environment);
 public:
 	static Environment* getEnvironment();
-	void sendMessage(Message* message);
+	void sendMessage(const Message* message);
 	void sendMessage(uint16_t channel_id, uint16_t user_id, char* text);
 };
 

@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
 
 static ServerEnvironment env;
 
@@ -21,7 +22,7 @@ static void joinChannel(const Message* message) {
 	//TODO: we should actually parse out the channel NAME from
 	//the message body and use that if present
 	uint16_t user_id = message->getUserID();
-	Channel.getChannel(channel_id)->addUser(user_id);
+	Channel::getChannel(channel_id)->addUser(user_id);
 }
 
 static void userLogin(const Message* message) {
@@ -50,7 +51,7 @@ ServerEnvironment::ServerEnvironment() : Environment() {
 	this->outgoing.registerCallback(relayMessage, DEFAULT_TRIGGER);
 
 	this->incoming.registerCallback(joinChannel, 'j');
-	this->incoming.registerCallback("join", 'j');
+	this->incoming.nameTrigger("join", 'j');
 
 	this->incoming.registerCallback(userLogin, 'L');
 	this->incoming.nameTrigger("login", 'L');
@@ -64,21 +65,21 @@ ServerEnvironment::~ServerEnvironment() {
 }
 
 void ServerEnvironment::createServerEnvironment(tacopie::tcp_server *server) {
-	this->server_ptr = std::shared_ptr<tacopie::tcp_server>{server};
 	createEnvironment(&env);
+	env.server_ptr = std::shared_ptr<tacopie::tcp_server>{server};
 }
 
-void ServerEnvironment::sendToUser(uint16_t user_id, Message* message) {
+void ServerEnvironment::sendToUser(uint16_t user_id, const Message* message) {
 	std::shared_ptr<tacopie::tcp_client> client = this->getUser(user_id);
 	if(client == nullptr)
 	{
-		stringstream err{};
+		std::stringstream err{};
 		err << "user_id " << user_id << " doesn't exist - cannot send message";
 		throw std::invalid_argument{err.str()};
 	}
-	auto bf_sz = message->getSerialBufSize();
+	auto buf_sz = message->getSerialBufSize();
 	char* buffer = new char[buf_sz];
-	client.async_write({std::vector<char>{buffer, buffer+buf_sz}, nullptr});
+	client->async_write({std::vector<char>{buffer, buffer+buf_sz}, nullptr});
 }
 
 /*
@@ -112,7 +113,7 @@ void ServerEnvironment::addUser(uint16_t user_id, std::shared_ptr<tacopie::tcp_c
 	// throw an exception.
 	if(this->client_list.find(user_id) != this->client_list.end())
 	{
-		stringstream err{};
+		std::stringstream err{};
 		err << "user_id " << user_id << " is already registered";
 		throw std::invalid_argument{err.str()};
 	}
@@ -132,7 +133,7 @@ void ServerEnvironment::removeUser(uint16_t user_id)
 	// otherwise, we'd get undefined behaviour.
 	if(this->client_list.find(user_id) == this->client_list.end())
 	{
-		stringstream err{};
+		std::stringstream err{};
 		err << "user_id " << user_id << " doesn't exist - cannot be removed";
 		throw std::invalid_argument{err.str()};
 	}
@@ -142,7 +143,7 @@ void ServerEnvironment::removeUser(uint16_t user_id)
 }
 
 
-void ServerEnvironment::sendToChannel(Message* message) {
+void ServerEnvironment::sendToChannel(const Message* message) {
 	Channel* channel = Channel::getChannelIfExists(message->getChannelID());
 	if(!channel) return;
 	for(auto user_id : channel->getUserIDs()) {
@@ -156,7 +157,7 @@ void ServerEnvironment::recieveFromClient(const std::shared_ptr<tacopie::tcp_cli
   if(res.success)
   {
     std::cout << "Our client sent something!" << std::endl;
-    client->async_read({1024, std::bind(&recieveFromClient, client, std::placeholders::_1)});
+    client->async_read({1024, std::bind(&ServerEnvironment::recieveFromClient, this, client, std::placeholders::_1)});
     /*
      * A quick note about read_result's structure:
      * success - bool, denotes the read operation's success value (duh)

@@ -21,7 +21,8 @@ int main(int argc, char* argv[])
 
   s.start("127.0.0.1", 7331, [] (const std::shared_ptr<tacopie::tcp_client>& client) -> bool {
       std::cout << "Client has connected to server..." << std::endl;
-      client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
+      ServerEnvironment *environment = ((ServerEnvironment*)(ServerEnvironment::getEnvironment));
+      client->async_read({1024, std::bind(ServerEnvironment::recieveFromClient, environment, client, std::placeholders::_1)});
       return true;
     });
 
