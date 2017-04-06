@@ -3,6 +3,9 @@
 #include "message_handler.h"
 #include "message.h"
 
+#include <stdexcept>
+#include <sstream>
+
 static ServerEnvironment env;
 
 static void loopback(const Message* message) {
@@ -50,9 +53,70 @@ void ServerEnvironment::createServerEnvironment() {
 	createEnvironment(&env);
 }
 
+void ServerEnvironment::sendToUser(uint16_t user_id, Message* message) {
+
+}
+
 /*
- * @CalmBit I think you need to implement sendToUser
+ * Gets a user connection (specifically a shared_ptr of a client object) by user ID. 
+ * If no matching connection is found, returns a nullptr, otherwise returns a shared_ptr
+ * to the client object.
  */
+std::shared_ptr<tacopie::tcp_client> getUser(uint16_t user_id)
+{
+	try
+	{
+		return this->client_list.at(user_id);
+	}
+	catch(std::out_of_range &e)
+	{
+		// We can safely assume that since we're getting an out of range
+		// exception, there's nothing going on aside from a lack of the
+		// value we're looking for, so quashing this exception is okay...
+		return nullptr;
+	}
+}
+
+/*
+ * Adds a user to the client_list object.
+ * Throws an std::invalid_argument exception if the user_id is already registered,
+ * otherwise adds the user_id to the client_list map.
+ */ 
+void addUser(uint16_t user_id, std::shared_ptr<tacopie::tcp_client> connection)
+{
+	// Do we have a connection by this user_id already? Throw it away,
+	// throw an exception.
+	if(this->client_list.find(user_id) != this->client_list.end())
+	{
+		stringstream err{};
+		err << "user_id " << user_id << " is already registered";
+		throw std::invalid_argument{err.str()};
+	}
+
+	// Otherwise, just add it to the map.
+	this->client_list[user_id] = connection;
+}
+
+/*
+ * Remove a user from the client_list object.
+ * If the user specified doesn't exist, throws an std::invalid_argument exception,
+ * otherwise completely erases the entry from the map.
+ */ 
+void removeUser(uint16_t user_id)
+{
+	// If we can't find a matching connection, we should throw an exception -
+	// otherwise, we'd get undefined behaviour.
+	if(this->client_list.find(user_id) == this->client_list.end())
+	{
+		stringstream err{};
+		err << "user_id " << user_id << " doesn't exist - cannot be removed'";
+		throw std::invalid_argument{err.str()};
+	}
+
+	// Otherwise, erase the connection.
+	this->client_list.erase(user_id);
+}
+
 
 void ServerEnvironment::sendToChannel(Message* message) {
 	Channel* channel = Channel::getChannelIfExists(message->getChannelID());
