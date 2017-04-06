@@ -49,12 +49,22 @@ ServerEnvironment::~ServerEnvironment() {
 	//whatever
 }
 
-void ServerEnvironment::createServerEnvironment() {
+void ServerEnvironment::createServerEnvironment(tacopie::tcp_server *server) {
+	this->server_ptr = std::shared_ptr<tacopie::tcp_server>{server};
 	createEnvironment(&env);
 }
 
 void ServerEnvironment::sendToUser(uint16_t user_id, Message* message) {
-
+	std::shared_ptr<tacopie::tcp_client> client = this->getUser(user_id);
+	if(client == nullptr)
+	{
+		stringstream err{};
+		err << "user_id " << user_id << " doesn't exist - cannot send message";
+		throw std::invalid_argument{err.str()};
+	}
+	auto bf_sz = message->getSerialBufSize();
+	char* buffer = new char[buf_sz];
+	client.async_write({std::vector<char>{buffer, buffer+buf_sz}, nullptr});
 }
 
 /*
@@ -109,7 +119,7 @@ void removeUser(uint16_t user_id)
 	if(this->client_list.find(user_id) == this->client_list.end())
 	{
 		stringstream err{};
-		err << "user_id " << user_id << " doesn't exist - cannot be removed'";
+		err << "user_id " << user_id << " doesn't exist - cannot be removed";
 		throw std::invalid_argument{err.str()};
 	}
 
