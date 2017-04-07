@@ -5,6 +5,13 @@
 
 #include <stdio.h>
 
+
+int getColorID(int user_id)
+{
+    return user_id ? 2 : 3;
+}
+
+
 char* getUsername(const char* local_username, int user_id)
 {
     static char buf[50];
@@ -21,10 +28,6 @@ char* getUsername(const char* local_username, int user_id)
     return buf;
 }
 
-int getColorID(int user_id)
-{
-    return user_id ? 2 : 3;
-}
 
 void fakeServer(const Message* message, MessageHandler* handler)
 {

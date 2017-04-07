@@ -1,30 +1,12 @@
-
 #include "chatLog.hpp"
 #include <stdio.h>
 
-void logChatLine(char *text, const char *fileName)
+
+void deleteChatLog(const char *fileName)
 {
-    FILE *file = fopen(fileName, "a");
-    
-    if (file != NULL)
-    {
-        fputs(text, file);
-    }
-    
-    fclose(file);
+    remove(fileName);
 }
 
-void logChatLine(const char *text, const char *fileName)
-{
-    FILE *file = fopen(fileName, "a");
-    
-    if (file != NULL)
-    {
-        fputs(text, file);
-    }
-    
-    fclose(file);
-}
 
 void getChatLine(const char *fileName, int lineNum, char *text)
 {
@@ -50,7 +32,28 @@ void getChatLine(const char *fileName, int lineNum, char *text)
     fclose(file);
 }
 
-void deleteChatLog(const char *fileName)
+
+void logChatLine(char *text, const char *fileName)
 {
-    remove(fileName);
+    FILE *file = fopen(fileName, "a");
+    
+    if (file != NULL)
+    {
+        fputs(text, file);
+    }
+    
+    fclose(file);
+}
+
+
+void logChatLine(const char *text, const char *fileName)
+{
+    FILE *file = fopen(fileName, "a");
+    
+    if (file != NULL)
+    {
+        fputs(text, file);
+    }
+    
+    fclose(file);
 }

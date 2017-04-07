@@ -11,6 +11,7 @@
 #include <panel.h>
 #include <menu.h>
 
+
 tacopie::tcp_client client;
 
 WINDOW* chatWindow;
@@ -35,57 +36,13 @@ const char *HELP = "/help";
 const char *EMPTY = "";
 const char *fileName = "chatLog.txt";
 
+
 int main(int argc, char* argv[])
 {
     startChat();
     return 0;
 }
 
-void resetInputWindow(WINDOW *inputWindow, const char *username)
-{
-    //clear the current text of the input window
-    wclear(inputWindow);
-    
-    //reset the input window text to display username
-    wmove(inputWindow, 0, 0);
-    wattron(inputWindow, COLOR_PAIR(5));
-    waddstr(inputWindow, username);
-    waddstr(inputWindow, ": ");
-    wrefresh(inputWindow);
-}
-
-void setupWindow(int &lines, int &columns)
-{
-    //the dimensions of the terminal
-    getmaxyx(stdscr, lines, columns);
-    menuColumns = columns / 5;
-    scrollok(stdscr, true);
-    
-    //start using ncurses colors and set color pairs.
-    start_color();
-    use_default_colors();
-    init_pair(1, COLOR_BLACK, -1);
-    init_pair(2, COLOR_CYAN, -1);
-    init_pair(3, COLOR_MAGENTA, -1);
-    init_pair(4, COLOR_WHITE, COLOR_BLACK);
-    init_pair(5, COLOR_BLACK, COLOR_WHITE);
-    bkgd(COLOR_PAIR(1));
-}
-
-void scrollWindowUp(WINDOW *win, int &line, int maxLines)
-{
-    if (line >= maxLines) {
-        wscrl(win, 1);
-        line = maxLines - 1;
-    }
-}
-
-void scrollWindowDown(WINDOW *win, int &line, int maxLines)
-{
-    if (line >= maxLines) {
-        wscrl(win, -1);
-    }
-}
 
 void addChatLine(const char* username, const char* message, int color)
 {
@@ -114,9 +71,20 @@ void addChatLine(const char* username, const char* message, int color)
     chatLine++;
 }
 
-void simChat(const char *message) {
-    addChatLine(NULL, message, 2);
+
+void chatLog(char *text)
+{
+    logChatLine(text, fileName);
+    logLines++;
 }
+
+
+void chatLog(const char *text)
+{
+    logChatLine(text, fileName);
+    logLines++;
+}
+
 
 bool compareArrays(char *array1, const char *array2, int length1, int length2)
 {
@@ -138,6 +106,43 @@ bool compareArrays(char *array1, const char *array2, int length1, int length2)
     
     return equal;
 }
+
+
+void createMenu()
+{
+    menuItems[0] = new_item("Lobby", "");
+    //menuItems[1] = new_item("chat 2", "");
+    chatMenu = new_menu(menuItems);
+    
+    menuWindow = menu_win(chatMenu);
+    wresize(menuWindow, lines, menuColumns);
+    box(menuWindow, 0, 0);
+    wbkgd(menuWindow, COLOR_PAIR(1));
+    set_menu_sub(chatMenu, derwin(menuWindow, lines - 2, menuColumns - 2, 1, 1));
+    set_menu_mark(chatMenu, "");
+    
+    post_menu(chatMenu);
+    refresh();
+}
+
+
+void deleteMenu()
+{
+    unpost_menu(chatMenu);
+    free_menu(chatMenu);
+    
+    for (int i = 0; i < 10; i++)
+    {
+        free_item(menuItems[i]);
+    }
+}
+
+
+void helpMessage(const Message* message)
+{
+    helpWindow(chatWindow, columns, lines, chatMaxLines);
+}
+
 
 void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
 {
@@ -180,15 +185,6 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
     doupdate();
 }
 
-void sendNormalMessage(const Message* message)
-{
-    fakeServer(message, incomingHandler);
-}
-
-void helpMessage(const Message* message)
-{
-    helpWindow(chatWindow, columns, lines, chatMaxLines);
-}
 
 void receiveNormalMessage(const Message* message)
 {
@@ -199,45 +195,69 @@ void receiveNormalMessage(const Message* message)
     addChatLine(user, text, color);
 }
 
-void chatLog(char *text)
+
+void resetInputWindow(WINDOW *inputWindow, const char *username)
 {
-    logChatLine(text, fileName);
-    logLines++;
+    //clear the current text of the input window
+    wclear(inputWindow);
+    
+    //reset the input window text to display username
+    wmove(inputWindow, 0, 0);
+    wattron(inputWindow, COLOR_PAIR(5));
+    waddstr(inputWindow, username);
+    waddstr(inputWindow, ": ");
+    wrefresh(inputWindow);
 }
 
-void chatLog(const char *text)
+
+void sendNormalMessage(const Message* message)
 {
-    logChatLine(text, fileName);
-    logLines++;
+    fakeServer(message, incomingHandler);
 }
 
-void createMenu()
+
+void setupWindow(int &lines, int &columns)
 {
-    menuItems[0] = new_item("Lobby", "");
-    //menuItems[1] = new_item("chat 2", "");
-    chatMenu = new_menu(menuItems);
+    //the dimensions of the terminal
+    getmaxyx(stdscr, lines, columns);
+    menuColumns = columns / 5;
+    scrollok(stdscr, true);
     
-    menuWindow = menu_win(chatMenu);
-    wresize(menuWindow, lines, menuColumns);
-    box(menuWindow, 0, 0);
-    wbkgd(menuWindow, COLOR_PAIR(1));
-    set_menu_sub(chatMenu, derwin(menuWindow, lines - 2, menuColumns - 2, 1, 1));
-    set_menu_mark(chatMenu, "");
-    
-    post_menu(chatMenu);
-    refresh();
+    //start using ncurses colors and set color pairs.
+    start_color();
+    use_default_colors();
+    init_pair(1, COLOR_BLACK, -1);
+    init_pair(2, COLOR_CYAN, -1);
+    init_pair(3, COLOR_MAGENTA, -1);
+    init_pair(4, COLOR_WHITE, COLOR_BLACK);
+    init_pair(5, COLOR_BLACK, COLOR_WHITE);
+    bkgd(COLOR_PAIR(1));
 }
 
-void deleteMenu()
+
+void simChat(const char *message)
 {
-    unpost_menu(chatMenu);
-    free_menu(chatMenu);
-    
-    for (int i = 0; i < 10; i++)
-    {
-        free_item(menuItems[i]);
+    addChatLine(NULL, message, 2);
+}
+
+
+
+void scrollWindowDown(WINDOW *win, int &line, int maxLines)
+{
+    if (line >= maxLines) {
+        wscrl(win, -1);
     }
 }
+
+
+void scrollWindowUp(WINDOW *win, int &line, int maxLines)
+{
+    if (line >= maxLines) {
+        wscrl(win, 1);
+        line = maxLines - 1;
+    }
+}
+
 
 void startChat()
 {
