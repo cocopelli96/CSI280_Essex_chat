@@ -1,15 +1,4 @@
-#include "placeholder.h"
-
-#include "message.h"
-#include "message_handler.h"
-
 #include "chatUI.hpp"
-#include "chatNetcode.hpp"
-#include "chatLog.hpp"
-
-#include <exception>
-#include <panel.h>
-#include <menu.h>
 
 
 tacopie::tcp_client client;

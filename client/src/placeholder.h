@@ -5,7 +5,7 @@
 //#include "../../generic/message_handler.h"
 #include "message.h"
 #include "message_handler.h"
-
+#include <stdio.h>
 
 int getColorID(int user_id);
 char* getUsername(const char* local_username, int user_id);

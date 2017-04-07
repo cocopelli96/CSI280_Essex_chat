@@ -1,5 +1,4 @@
 #include "chatLog.hpp"
-#include <stdio.h>
 
 
 void deleteChatLog(const char *fileName)

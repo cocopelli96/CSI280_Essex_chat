@@ -1,10 +1,5 @@
 #include "placeholder.h"
 
-#include "message.h"
-#include "message_handler.h"
-
-#include <stdio.h>
-
 
 int getColorID(int user_id)
 {

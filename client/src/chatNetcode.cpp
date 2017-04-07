@@ -1,5 +1,4 @@
 #include "chatNetcode.hpp"
-#include <iostream>
 
 
 void cleanupNetcode(tacopie::tcp_client &client)
