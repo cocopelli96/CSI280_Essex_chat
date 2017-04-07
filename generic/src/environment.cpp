@@ -6,20 +6,12 @@
 
 Environment* Environment::environment = NULL;
 
-/* 
- * The following need implementation, @PatrickDCoffman...
- */
-Environment::Environment()
-{
+Environment::Environment() { }
 
-}
-Environment::~Environment()
-{
+Environment::~Environment() { }
 
-}
-
-void Environment::createEnvironment(Environment* environment) {
-
+void Environment::createEnvironment(Environment* new_environment) {
+	environment = new_environment;
 }
 
 Environment* Environment::getEnvironment() {
