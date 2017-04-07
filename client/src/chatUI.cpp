@@ -41,7 +41,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void resetInputWindow(WINDOW *inputWindow, const char *username) {
+void resetInputWindow(WINDOW *inputWindow, const char *username)
+{
     //clear the current text of the input window
     wclear(inputWindow);
     
@@ -53,7 +54,8 @@ void resetInputWindow(WINDOW *inputWindow, const char *username) {
     wrefresh(inputWindow);
 }
 
-void setupWindow(int &lines, int &columns) {
+void setupWindow(int &lines, int &columns)
+{
     //the dimensions of the terminal
     getmaxyx(stdscr, lines, columns);
     menuColumns = columns / 5;
@@ -70,26 +72,30 @@ void setupWindow(int &lines, int &columns) {
     bkgd(COLOR_PAIR(1));
 }
 
-void scrollWindowUp(WINDOW *win, int &line, int maxLines) {
+void scrollWindowUp(WINDOW *win, int &line, int maxLines)
+{
     if (line >= maxLines) {
         wscrl(win, 1);
         line = maxLines - 1;
     }
 }
 
-void scrollWindowDown(WINDOW *win, int &line, int maxLines) {
+void scrollWindowDown(WINDOW *win, int &line, int maxLines)
+{
     if (line >= maxLines) {
         wscrl(win, -1);
     }
 }
 
-void addChatLine(const char* username, const char* message, int color) {
+void addChatLine(const char* username, const char* message, int color)
+{
     char text[255];
     scrollWindowUp(chatWindow, chatLine, chatMaxLines);
     
     wmove(chatWindow, chatLine, 0);
     wattron(chatWindow, COLOR_PAIR(color));
-    if(username) {
+    if(username)
+    {
         //waddstr(chatWindow, username);
         //waddstr(chatWindow, ": ");
         
@@ -112,14 +118,19 @@ void simChat(const char *message) {
     addChatLine(NULL, message, 2);
 }
 
-bool compareArrays(char *array1, const char *array2, int length1, int length2) {
+bool compareArrays(char *array1, const char *array2, int length1, int length2)
+{
     bool equal = true;
     
-    for (int i = 0; i < length1; i++) {
-        for (int j = 0; j < length2; j++) {
-            if (i == j and array1[i] != array2[j]) {
+    for (int i = 0; i < length1; i++)
+    {
+        for (int j = 0; j < length2; j++)
+        {
+            if (i == j and array1[i] != array2[j])
+            {
                 equal = false;
-            } else if (j > i) {
+            } else if (j > i)
+            {
                 break;
             }
         }
@@ -128,7 +139,8 @@ bool compareArrays(char *array1, const char *array2, int length1, int length2) {
     return equal;
 }
 
-void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
+void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
+{
     //initialize variables
     int windowColumns = columns / 2;
     
@@ -168,15 +180,18 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines) {
     doupdate();
 }
 
-void sendNormalMessage(const Message* message) {
+void sendNormalMessage(const Message* message)
+{
     fakeServer(message, incomingHandler);
 }
 
-void helpMessage(const Message* message) {
+void helpMessage(const Message* message)
+{
     helpWindow(chatWindow, columns, lines, chatMaxLines);
 }
 
-void receiveNormalMessage(const Message* message) {
+void receiveNormalMessage(const Message* message)
+{
     int userID = message->getUserID();
     int color = getColorID(userID);
     char* user = getUsername(username, userID);
@@ -184,17 +199,20 @@ void receiveNormalMessage(const Message* message) {
     addChatLine(user, text, color);
 }
 
-void chatLog(char *text) {
+void chatLog(char *text)
+{
     logChatLine(text, fileName);
     logLines++;
 }
 
-void chatLog(const char *text) {
+void chatLog(const char *text)
+{
     logChatLine(text, fileName);
     logLines++;
 }
 
-void createMenu() {
+void createMenu()
+{
     menuItems[0] = new_item("Lobby", "");
     //menuItems[1] = new_item("chat 2", "");
     chatMenu = new_menu(menuItems);
@@ -210,16 +228,19 @@ void createMenu() {
     refresh();
 }
 
-void deleteMenu() {
+void deleteMenu()
+{
     unpost_menu(chatMenu);
     free_menu(chatMenu);
     
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         free_item(menuItems[i]);
     }
 }
 
-void startChat() {
+void startChat()
+{
     //initialize variables
     int count = 0;
     char input[255];
@@ -270,15 +291,20 @@ void startChat() {
     }
     
     //start chat loop, waiting for user responses
-    while (!ending) {
+    while (!ending)
+    {
         //simulated other user chats
-        if (count == 2) {
+        if (count == 2)
+        {
             simChat("User1: hey Paul");
-        } else if (count == 3) {
+        } else if (count == 3)
+        {
             simChat("User2: whats up mike");
-        } else if (count == 5) {
+        } else if (count == 5)
+        {
             simChat("User1: where r u today");
-        } else if (count == 6) {
+        } else if (count == 6)
+        {
             simChat("User2: at the park");
         }
         
@@ -288,9 +314,12 @@ void startChat() {
         //grab user input
         wgetstr(inputWindow, input);
         
-        if (compareArrays(input, EXIT, 255, 5)) {
+        if (compareArrays(input, EXIT, 255, 5))
+        {
             ending = true;
-        } else {
+        } 
+        else
+        {
             outgoingHandler->accept(0, 0, input);
         }
         
