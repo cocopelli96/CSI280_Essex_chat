@@ -24,6 +24,10 @@ const char *EXIT = "/exit";
 const char *HELP = "/help";
 const char *EMPTY = "";
 const char *fileName = "chatLog.txt";
+char *chatName = "Lobby";
+char **chatRooms = [chatName];
+
+map<char*, map> usernameMap;
 
 
 int main(int argc, char* argv[])
@@ -97,10 +101,21 @@ bool compareArrays(char *array1, const char *array2, int length1, int length2)
 }
 
 
+void createChatUsers(char *newChatName)
+{
+    map<int, char*> chatMap;
+    usernameMap[newChatName] = chatMap;
+}
+
+
 void createMenu()
 {
-    menuItems[0] = new_item("Lobby", "");
+    menuItems[0] = new_item(chatName, "");
     //menuItems[1] = new_item("chat 2", "");
+    
+    map<int, char*> chatMap;
+    usernameMap[chatName] = chatMap;
+    
     chatMenu = new_menu(menuItems);
     
     menuWindow = menu_win(chatMenu);
@@ -112,6 +127,17 @@ void createMenu()
     
     post_menu(chatMenu);
     refresh();
+}
+
+
+void deleteChatUsers(char *oldChatName)
+{
+    map<char*, map>::iterator it;
+    it = usernameMap.find(oldChatName);
+    
+    if(it != usernameMap.ecnd()) {
+        usernameMap.erase(it);
+    }
 }
 
 
@@ -129,11 +155,11 @@ void deleteMenu()
 
 void helpMessage(const Message* message)
 {
-    helpWindow(chatWindow, columns, lines, chatMaxLines);
+    helpWindow(columns, lines, chatMaxLines);
 }
 
 
-void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
+void helpWindow(int columns, int lines, int chatMaxLines)
 {
     //initialize variables
     int windowColumns = columns / 2;
@@ -155,6 +181,8 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
     wmove(helpWindow, 4, 1);
     waddstr(helpWindow, "/help     |   presents the help window");
     wmove(helpWindow, 5, 1);
+    waddstr(helpWindow, "/users    |   presents the user window");
+    wmove(helpWindow, 6, 1);
     waddstr(helpWindow, "/exit     |   exit the chat");
     wmove(helpWindow, chatMaxLines - 2, 1);
     waddstr(helpWindow, "Press any key to close this window...");
@@ -179,7 +207,13 @@ void receiveNormalMessage(const Message* message)
 {
     int userID = message->getUserID();
     int color = getColorID(userID);
-    char* user = getUsername(username, userID);
+    
+    //map usernames to ids for the chat
+    if (usernameMap[chatName][userID] == NULL) {
+        usernameMap[chatName][userID] = getUsername(username, userID);
+    }
+    char *user = usernameMap[chatName][userID];
+    
     const char* text = message->getText();
     addChatLine(user, text, color);
 }
@@ -282,6 +316,9 @@ void startChat()
     outgoingHandler->nameTrigger("help", 'H');
     outgoingHandler->registerCallback(helpMessage, 'H');
     outgoingHandler->registerCallback(sendNormalMessage, DEFAULT_TRIGGER);
+    
+    outgoingHandler->nameTrigger("users", 'S');
+    outgoingHandler->registerCallback(userMessage, 'S');
 
     incomingHandler = new MessageHandler();
     incomingHandler->registerCallback(receiveNormalMessage, DEFAULT_TRIGGER);
@@ -347,4 +384,50 @@ void startChat()
     endwin();
     delete outgoingHandler;
     delete incomingHandler;
+}
+
+
+void userMessage(const Message* message)
+{
+    userWindow(columns, lines, chatMaxLines);
+}
+
+
+void userWindow(int columns, int lines, int chatMaxLines)
+{
+    //initialize variables
+    int windowColumns = columns / 2;
+    
+    //create the help window
+    WINDOW *userWindow = newwin(chatMaxLines, windowColumns, 0, windowColumns / 2);
+    wbkgd(userWindow, COLOR_PAIR(4));
+    wborder(userWindow, 0, 0, 0, 0, 0, 0, 0, 0);
+    wattron(userWindow, A_BOLD);
+    
+    //create panel for the window
+    PANEL *userPanel = new_panel(userWindow);
+    
+    //provide list of users
+    wmove(userWindow, 1, 1);
+    waddstr(userWindow, "User List");
+    row = 3;
+    for(map<int, char*>::iterator it = usernameMap[chatName].begin(); it != usernameMap[chatName].end(); it++) {
+        wmove(userWindow, row, 1);
+        waddstr(userWindow, it->second);
+        row++;
+    }
+    wrefresh(userWindow);
+    
+    //update panels
+    update_panels();
+    doupdate();
+    
+    //delete the help window the next time the user presses a button
+    wgetch(userWindow);
+    del_panel(userPanel);
+    delwin(userWindow);
+    
+    //update panels
+    update_panels();
+    doupdate();
 }

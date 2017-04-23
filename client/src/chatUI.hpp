@@ -10,15 +10,18 @@
 #include <exception>
 #include <panel.h>
 #include <menu.h>
+#include <map>
 
 void addChatLine(const char* username, const char* message, int color);
 void chatLog(char *text);
 void chatLog(const char *text);
 bool compareArrays(char *array1, const char *array2, int length1, int length2);
+void createChatUsers(char *newChatName);
 void createMenu();
+void deleteChatUsers(char *oldChatName);
 void deleteMenu();
 void helpMessage(const Message* message);
-void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines);
+void helpWindow(int columns, int lines, int chatMaxLines);
 void receiveNormalMessage(const Message* message);
 void resetInputWindow(WINDOW *inputWindow, const char *username);
 void sendNormalMessage(const Message* message);
@@ -27,6 +30,8 @@ void simChat(const char *message);
 void scrollWindowDown(WINDOW *win, int &line, int maxLines);
 void scrollWindowUp(WINDOW *win, int &line, int maxLines);
 void startChat();
+void userMessage(const Message* message);
+void userWindow(int columns, int lines, int chatMaxLines);
 
 
 #endif
