@@ -5,6 +5,7 @@
 #include <csignal>
 #include <functional>
 #include <sstream>
+#include <string>
 #include "server.hpp"
 
 tacopie::tcp_server s;
@@ -28,29 +29,19 @@ void messageReceived(const std::shared_ptr<tacopie::tcp_client>& client, const t
              * This is where a type parser should come in, rather than this switch statement.
              */
             auto messageType = *(res.buffer.begin());
-            switch(messageType)
+            std::cout << "A client sent the follwing message: ";
+            for(auto i = res.buffer.begin(); i != res.buffer.end(); i++)
             {
-                //case 'm':
-            default:
-                std::cout << "A client sent the follwing message: ";
-                /*
-                 * Better ways to handle this, including constructing a string from these iterators, but
-                 * this is Milestone 1 - we're not even able to intergrate the protocol yet...
-                 */
-                for(auto i = res.buffer.begin()+1;i != res.buffer.end();i++)
-                {
-                    std::cout << *i;
-                }
-                std::cout << std::endl;
-                std::stringstream resp;
-                resp << "Message recieved. The packet had " << res.buffer.size() << " bytes in it.";
-                // this is where the response would get transferred to the parser to be packaged and spat back out
-                client->async_write({std::vector<char>{resp.str().begin(), resp.str().end()}, nullptr});
-                break;
-                /*default:
-                std::cerr << "We couldn't tell what type of message the client sent." << std::endl;
-                break;*/
+                std::cout << *i;
             }
+            std::cout << std::endl;
+            
+            std::string msg;
+            msg = "Message recieved. The packet had ";
+            msg += std::to_string(res.buffer.size());
+            msg += " bytes in it.";
+            
+            client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
         }
     }
 }
