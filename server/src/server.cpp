@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
   
     std::cout << info << "Essex " << SERVER_VERSION << " is starting up..." << reset << std::endl;
 
-    s.start("127.0.0.1", 7331, [] (const std::shared_ptr<tacopie::tcp_client>& client) -> bool {
+    s.start("0.0.0.0", 7331, [] (const std::shared_ptr<tacopie::tcp_client>& client) -> bool {
         std::cout << "Client has connected to server..." << std::endl;
         client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
         return true;
