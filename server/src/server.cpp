@@ -15,34 +15,26 @@ void messageReceived(const std::shared_ptr<tacopie::tcp_client>& client, const t
     if(res.success)
     {
         std::cout << "Our client sent something!" << std::endl;
-        client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
         /*
          * A quick note about read_result's structure:
          * success - bool, denotes the read operation's success value (duh)
          * buffer - std::vector<char>, the bytes from the read operation
          */
-
-        if(res.success)
+        std::cout << "A client sent the follwing message: ";
+        for(auto i = res.buffer.begin(); i != res.buffer.end(); i++)
         {
-            /*
-             * Just an example of some of the reading we can do. Pass back a dummy echo message for now.
-             * This is where a type parser should come in, rather than this switch statement.
-             */
-            auto messageType = *(res.buffer.begin());
-            std::cout << "A client sent the follwing message: ";
-            for(auto i = res.buffer.begin(); i != res.buffer.end(); i++)
-            {
-                std::cout << *i;
-            }
-            std::cout << std::endl;
-            
-            std::string msg;
-            msg = "Message recieved. The packet had ";
-            msg += std::to_string(res.buffer.size());
-            msg += " bytes in it.";
-            
-            client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
+            std::cout << *i;
         }
+        std::cout << std::endl;
+        
+        std::string msg;
+        msg = "Message recieved. The packet had ";
+        msg += std::to_string(res.buffer.size());
+        msg += " bytes in it.\n";
+        
+        client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
+        client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
+        std::cout << "Sent to client:\n" << msg;
     }
 }
 
