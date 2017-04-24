@@ -22,7 +22,7 @@ To make the project you must run the following commands:
 git submodule update --init --recursive
 make
 ```
-After this to run the project you must use the folloing command:
+After this to run the project you must use the following command:
 ```
 ./client/bin/chatter_client
 ```
