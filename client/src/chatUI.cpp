@@ -201,7 +201,7 @@ void resetInputWindow(WINDOW *inputWindow, const char *username)
 
 void sendNormalMessage(const Message* message)
 {
-    fakeServer(message, incomingHandler);
+    writeToServer(client, std::string{message->getText()});
 }
 
 
@@ -288,7 +288,7 @@ void startChat()
 
     try
     {
-        initNetcode(client, "127.0.0.1");
+        initNetcode(client, "172.19.30.109");
         // dirty hack to try to see if we can get early
         // reporting working
         simChat("We were successful in initting the TCP connection");
