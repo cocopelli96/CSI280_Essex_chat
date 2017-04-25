@@ -24,12 +24,15 @@ char *username = NULL;
 const char *EXIT = "/exit";
 const char *HELP = "/help";
 const char *EMPTY = "";
-const char *fileName = "chatLog.txt";
+char fileName[1024];
 
 
 int main(int argc, char* argv[])
 {
-    deleteChatLog(fileName);
+    time_t timestamp;
+    time (&timestamp);
+    struct tm *local_timestamp = localtime(&timestamp);
+    strftime(fileName, 1024, "chatter_log_%T_%F.txt", local_timestamp);
     username = strdup("<guest>");
     startChat();
     return 0;
@@ -336,7 +339,6 @@ void startChat()
         count++;
     }
     
-    deleteChatLog(fileName);
     deleteMenu();
     
     //delete windows and stop using ncurses
