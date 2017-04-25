@@ -27,10 +27,18 @@ const char *HELP = "/help";
 const char *EMPTY = "";
 char fileName[1024];
 
+char* hostname;
+
 bool ending = false;
 
 int main(int argc, char* argv[])
 {
+    if(argc < 2) {
+        fprintf(stderr, "USAGE: %s HOSTNAME\n", argv[0]);
+        return 1;
+    } else {
+        hostname = argv[1];
+    }
     time_t timestamp;
     time (&timestamp);
     struct tm *local_timestamp = localtime(&timestamp);
@@ -291,7 +299,7 @@ void startChat()
 
     try
     {
-        initNetcode(client, "172.19.30.109");
+        initNetcode(client, hostname);
         // dirty hack to try to see if we can get early
         // reporting working
         writeToServer(client, "A user has connected!");
