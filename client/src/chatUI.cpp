@@ -288,7 +288,7 @@ void startChat()
 
     try
     {
-        initNetcode(client, "172.19.30.109");
+        initNetcode(client, "127.0.0.1");
         // dirty hack to try to see if we can get early
         // reporting working
         simChat("We were successful in initting the TCP connection");
