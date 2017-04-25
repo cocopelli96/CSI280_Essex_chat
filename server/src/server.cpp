@@ -8,33 +8,33 @@
 #include <string>
 #include "server.hpp"
 
+#include <string.h>
+
 tacopie::tcp_server s;
 
 void messageReceived(const std::shared_ptr<tacopie::tcp_client>& client, const tacopie::tcp_client::read_result& res)
 {
     if(res.success)
     {
-        std::cout << "Our client sent something!" << std::endl;
         /*
          * A quick note about read_result's structure:
          * success - bool, denotes the read operation's success value (duh)
          * buffer - std::vector<char>, the bytes from the read operation
          */
+        std::vector<char> result_vec = res.buffer;
+        int len = result_vec.size();
+        char buf[len + 1];
+        memcpy(buf, result_vec.data(), len);
+        buf[len] = 0;
         std::cout << "A client sent the follwing message: ";
-        for(auto i = res.buffer.begin(); i != res.buffer.end(); i++)
-        {
-            std::cout << *i;
-        }
+        std::cout << buf;
         std::cout << std::endl;
         
-        std::string msg;
-        msg = "Message recieved. The packet had ";
-        msg += std::to_string(res.buffer.size());
-        msg += " bytes in it.\n";
+        std::string msg = buf;
         
         client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
-        client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
         std::cout << "Sent to client:\n" << msg;
+        client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
     }
 }
 
