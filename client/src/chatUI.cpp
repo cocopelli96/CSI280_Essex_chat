@@ -302,21 +302,6 @@ void startChat()
     //start chat loop, waiting for user responses
     while (!ending)
     {
-        //simulated other user chats
-        if (count == 2)
-        {
-            simChat("User1: hey Paul");
-        } else if (count == 3)
-        {
-            simChat("User2: whats up mike");
-        } else if (count == 5)
-        {
-            simChat("User1: where r u today");
-        } else if (count == 6)
-        {
-            simChat("User2: at the park");
-        }
-        
         //reset the input window
         resetInputWindow(inputWindow, username);
         
