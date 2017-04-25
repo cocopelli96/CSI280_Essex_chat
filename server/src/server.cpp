@@ -32,9 +32,18 @@ void messageReceived(const std::shared_ptr<tacopie::tcp_client>& client, const t
         
         std::string msg = buf;
         
-        client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
-        std::cout << "Sent to client:\n" << msg;
-        client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
+        //client->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
+        //std::cout << "Sent to client:\n" << msg << std::endl;
+        //client->async_read({1024, std::bind(&messageReceived, client, std::placeholders::_1)});
+        
+        std::list<std::shared_ptr<tacopie::tcp_client>> clientList;
+        clientList = s.get_clients();
+        int count = 0;
+        for (std::list<std::shared_ptr<tacopie::tcp_client>>::const_iterator it = clientList.begin(); it != clientList.end(); it++) {
+            (*it)->async_write({std::vector<char>{msg.begin(), msg.end()}, nullptr});
+            std::cout << "Sent to client" << count++ << ":\n" << msg << std::endl;
+            (*it)->async_read({1024, std::bind(&messageReceived, (*it), std::placeholders::_1)});
+        }
     }
 }
 
