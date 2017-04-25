@@ -32,4 +32,5 @@ While in the program you can use the following as commands inside the chat room:
 ```
 /exit         This will exit the chat room.
 /help         This will display the help menu.
+/login NAME   This will set your username to NAME.
 ```
