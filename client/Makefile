@@ -1,6 +1,6 @@
 CC=g++
 LD=g++
-CFLAGS=-Wall --std=c++11
+CFLAGS=-Wall --std=c++11 -D_BSD_SOURCE
 LDFLAGS=-L../deps/tacopie/build/lib/ -ltacopie -L../deps/ncurses/lib -lmenu -lpanel -lncurses -L../generic/lib -lessexgeneric -pthread
 
 OBJDIR=obj

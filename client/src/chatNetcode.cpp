@@ -23,7 +23,7 @@ void onMessageReceived(tacopie::tcp_client& client, const tacopie::tcp_client::r
     char buf[len + 1];
     memcpy(buf, result_vec.data(), len);
     buf[len] = 0;
-    addChatLine("<user>", buf, 3);
+    addChatLine(NULL, buf, 3);
     client.async_read({ 1024, std::bind(&onMessageReceived, std::ref(client), std::placeholders::_1) });
 }
 

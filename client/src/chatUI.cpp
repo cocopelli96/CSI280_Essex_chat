@@ -1,5 +1,6 @@
 #include "chatUI.hpp"
-
+#include "message_handler.h"
+#include <string.h>
 
 tacopie::tcp_client client;
 
@@ -19,7 +20,7 @@ const int inputMaxLines = 2;
 MessageHandler* outgoingHandler;
 MessageHandler* incomingHandler;
 
-const char *username = "User3";
+char *username = NULL;
 const char *EXIT = "/exit";
 const char *HELP = "/help";
 const char *EMPTY = "";
@@ -28,6 +29,7 @@ const char *fileName = "chatLog.txt";
 
 int main(int argc, char* argv[])
 {
+    username = strdup("<guest>");
     startChat();
     return 0;
 }
@@ -132,6 +134,11 @@ void helpMessage(const Message* message)
     helpWindow(chatWindow, columns, lines, chatMaxLines);
 }
 
+void setUsername(const Message* message)
+{
+    free(username);
+    username = strdup(message->getText());
+}
 
 void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
 {
@@ -201,7 +208,10 @@ void resetInputWindow(WINDOW *inputWindow, const char *username)
 
 void sendNormalMessage(const Message* message)
 {
-    writeToServer(client, std::string{message->getText()});
+    std::string text = username;
+    text += ": ";
+    text += std::string{message->getText()};
+    writeToServer(client, text);
 }
 
 
@@ -281,6 +291,8 @@ void startChat()
     outgoingHandler = new MessageHandler();
     outgoingHandler->nameTrigger("help", 'H');
     outgoingHandler->registerCallback(helpMessage, 'H');
+    outgoingHandler->nameTrigger("login", 'L');
+    outgoingHandler->registerCallback(setUsername, 'L');
     outgoingHandler->registerCallback(sendNormalMessage, DEFAULT_TRIGGER);
 
     incomingHandler = new MessageHandler();
@@ -288,7 +300,7 @@ void startChat()
 
     try
     {
-        initNetcode(client, "127.0.0.1");
+        initNetcode(client, "172.19.30.109");
         // dirty hack to try to see if we can get early
         // reporting working
         simChat("We were successful in initting the TCP connection");
