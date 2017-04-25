@@ -29,6 +29,7 @@ const char *fileName = "chatLog.txt";
 
 int main(int argc, char* argv[])
 {
+    deleteChatLog(fileName);
     username = strdup("<guest>");
     startChat();
     return 0;
@@ -158,11 +159,13 @@ void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
     wmove(helpWindow, 1, 1);
     waddstr(helpWindow, "Welcome to the Help Menu");
     wmove(helpWindow, 3, 1);
-    waddstr(helpWindow, "Command   |   Effect");
+    waddstr(helpWindow, "Command     |   Effect");
     wmove(helpWindow, 4, 1);
-    waddstr(helpWindow, "/help     |   presents the help window");
+    waddstr(helpWindow, "/help       |   presents the help window");
     wmove(helpWindow, 5, 1);
-    waddstr(helpWindow, "/exit     |   exit the chat");
+    waddstr(helpWindow, "/login NAME |   sets your username to NAME");
+    wmove(helpWindow, 6, 1);
+    waddstr(helpWindow, "/exit       |   exit the chat");
     wmove(helpWindow, chatMaxLines - 2, 1);
     waddstr(helpWindow, "Press any key to close this window...");
     wrefresh(helpWindow);
@@ -303,8 +306,9 @@ void startChat()
         initNetcode(client, "172.19.30.109");
         // dirty hack to try to see if we can get early
         // reporting working
+        writeToServer(client, "A user has connected!");
         simChat("We were successful in initting the TCP connection");
-        writeToServer(client, "Test Test 1 2 3");
+	simChat("Type /help for help, or /login USERNAME to set a username");
     }
     catch(std::exception &err)
     {
@@ -332,9 +336,7 @@ void startChat()
         count++;
     }
     
-    //delete chat log file
     deleteChatLog(fileName);
-    
     deleteMenu();
     
     //delete windows and stop using ncurses
