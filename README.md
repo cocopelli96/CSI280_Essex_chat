@@ -17,14 +17,16 @@ Install the following dependencies before working with the this project:
 ```
 cmake
 ```
-To make the project you must run the following commands:
+To make the project you must do the following:
 ```
-git submodule update --init --recursive
-make
+1. run the following command: git submodule update --init --recursive
+2. if on a Mac edit line 28 of the deps/colorizer/Makefile to be: $(LD) $(LDFLAGS) $(BINDIR)/$(BINNAME) $<
+3. run the following command: make
 ```
-After this to run the project you must use the following command:
+After this to run the project you must use the following commands in seperate windows:
 ```
-./client/bin/chatter_client
+./server/bin/chatter_server     -- This starts a server to communicate with
+./client/bin/chatter_client     -- This starts a client to use the chat
 ```
 While in the program you can use the following as commands inside the chat room:
 ```
