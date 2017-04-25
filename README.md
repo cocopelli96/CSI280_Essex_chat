@@ -26,7 +26,7 @@ To make the project you must do the following:
 After this to run the project you must use the following commands in seperate windows:
 ```
 ./server/bin/chatter_server     -- This starts a server to communicate with
-./client/bin/chatter_client     -- This starts a client to use the chat
+./client/bin/chatter_client IP_ADDRESS     -- This starts a client to use the chat where IP_ADDRESS is the server's IP address
 ```
 While in the program you can use the following as commands inside the chat room:
 ```
