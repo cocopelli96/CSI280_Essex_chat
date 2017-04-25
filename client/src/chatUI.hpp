@@ -14,7 +14,6 @@
 void addChatLine(const char* username, const char* message, int color);
 void chatLog(char *text);
 void chatLog(const char *text);
-bool compareArrays(char *array1, const char *array2, int length1, int length2);
 void createMenu();
 void deleteMenu();
 void helpMessage(const Message* message);

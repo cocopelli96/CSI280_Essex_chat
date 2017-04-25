@@ -1,6 +1,7 @@
 #include "chatUI.hpp"
 #include "message_handler.h"
 #include <string.h>
+#include <functional>
 
 tacopie::tcp_client client;
 
@@ -26,6 +27,7 @@ const char *HELP = "/help";
 const char *EMPTY = "";
 char fileName[1024];
 
+bool ending = false;
 
 int main(int argc, char* argv[])
 {
@@ -81,28 +83,6 @@ void chatLog(const char *text)
 }
 
 
-bool compareArrays(char *array1, const char *array2, int length1, int length2)
-{
-    bool equal = true;
-    
-    for (int i = 0; i < length1; i++)
-    {
-        for (int j = 0; j < length2; j++)
-        {
-            if (i == j and array1[i] != array2[j])
-            {
-                equal = false;
-            } else if (j > i)
-            {
-                break;
-            }
-        }
-    }
-    
-    return equal;
-}
-
-
 void createMenu()
 {
     menuItems[0] = new_item("Lobby", "");
@@ -132,7 +112,6 @@ void deleteMenu()
     }
 }
 
-
 void helpMessage(const Message* message)
 {
     helpWindow(chatWindow, columns, lines, chatMaxLines);
@@ -142,6 +121,11 @@ void setUsername(const Message* message)
 {
     free(username);
     username = strdup(message->getText());
+}
+
+void exitChatter(const Message* message)
+{
+    ending = true;
 }
 
 void helpWindow(WINDOW *chatWindow, int columns, int lines, int chatMaxLines)
@@ -269,7 +253,6 @@ void startChat()
     //initialize variables
     int count = 0;
     char input[255];
-    bool ending = false;
     
     //start using ncurses windows
     initscr();
@@ -299,6 +282,8 @@ void startChat()
     outgoingHandler->registerCallback(helpMessage, 'H');
     outgoingHandler->nameTrigger("login", 'L');
     outgoingHandler->registerCallback(setUsername, 'L');
+    outgoingHandler->nameTrigger("exit", 'E');
+    outgoingHandler->registerCallback(exitChatter, 'E');
     outgoingHandler->registerCallback(sendNormalMessage, DEFAULT_TRIGGER);
 
     incomingHandler = new MessageHandler();
@@ -326,15 +311,7 @@ void startChat()
         
         //grab user input
         wgetstr(inputWindow, input);
-        
-        if (compareArrays(input, EXIT, 255, 5))
-        {
-            ending = true;
-        } 
-        else
-        {
-            outgoingHandler->accept(0, 0, input);
-        }
+        outgoingHandler->accept(0, 0, input);
         
         count++;
     }
